@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GameOfLife.Data.Access\GameOfLife.Data.Access.csproj" />
     <ProjectReference Include="..\GameOfLife.Data.SQL\GameOfLife.Data.SQL.csproj" />
   </ItemGroup>
 

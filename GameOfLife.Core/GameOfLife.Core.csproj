@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="IServices\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\GameOfLife.Infrastructure\GameOfLife.Infrastructure.csproj" />
   </ItemGroup>
 
