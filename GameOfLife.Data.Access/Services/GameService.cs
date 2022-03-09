@@ -116,106 +116,110 @@ namespace GameOfLife.Data.Access.Services
         }
 
 
-        public Board UpdateGeneration(string boardId)
+        public bool UpdateGeneration(string boardId)
         {
             var board = _unitOfWork.Boards.GetById(boardId);
-
-            var aliveCells = _unitOfWork.Cells.GetAllAsQueryable().Where(x => x.BoardId == board.Id && x.IsAlive);
-            var deadCells = _unitOfWork.Cells.GetAllAsQueryable().Where(x => x.BoardId == board.Id && !x.IsAlive);
-
-            #region Handle alive Cells
-            foreach (var cell in aliveCells)
+            if (board != null)
             {
-                int numberOfNeighbooringLiveCells = 0;
 
-                if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId - 1))
-                    numberOfNeighbooringLiveCells++;
+                var aliveCells = _unitOfWork.Cells.GetAllAsQueryable().Where(x => x.BoardId == board.Id && x.IsAlive);
+                var deadCells = _unitOfWork.Cells.GetAllAsQueryable().Where(x => x.BoardId == board.Id && !x.IsAlive);
 
-                if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId + 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId - 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId + 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId - 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId))
-                    numberOfNeighbooringLiveCells++;
-
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId + 1))
-                    numberOfNeighbooringLiveCells++;
-
-
-
-                var deadOrAlive = StaticFunctions.CellNextGenerationState(numberOfNeighbooringLiveCells, true, board.GameRule);
-
-
-                if (cell.IsAlive != deadOrAlive)
+                #region Handle alive Cells
+                foreach (var cell in aliveCells)
                 {
-                    cell.IsAlive = deadOrAlive;
-                    _unitOfWork.Cells.Update(cell);
+                    int numberOfNeighbooringLiveCells = 0;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId - 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId + 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId - 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId + 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId - 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId))
+                        numberOfNeighbooringLiveCells++;
+
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId + 1))
+                        numberOfNeighbooringLiveCells++;
+
+
+
+                    var deadOrAlive = StaticFunctions.CellNextGenerationState(numberOfNeighbooringLiveCells, true, board.GameRule);
+
+
+                    if (cell.IsAlive != deadOrAlive)
+                    {
+                        cell.IsAlive = deadOrAlive;
+                        _unitOfWork.Cells.Update(cell);
+                    }
+
                 }
 
-            }
-
-            #endregion
+                #endregion
 
 
-            #region Handle dead Cells
-            foreach (var cell in deadCells)
-            {
-                int numberOfNeighbooringLiveCells = 0;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId - 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId + 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId - 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId + 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId - 1))
-                    numberOfNeighbooringLiveCells++;
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId))
-                    numberOfNeighbooringLiveCells++;
-
-
-                if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId + 1))
-                    numberOfNeighbooringLiveCells++;
-
-
-
-                var deadOrAlive = StaticFunctions.CellNextGenerationState(numberOfNeighbooringLiveCells, false, board.GameRule);
-
-
-                if (cell.IsAlive != deadOrAlive)
+                #region Handle dead Cells
+                foreach (var cell in deadCells)
                 {
-                    cell.IsAlive = deadOrAlive;
-                    _unitOfWork.Cells.Update(cell);
+                    int numberOfNeighbooringLiveCells = 0;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId - 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId + 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId - 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId && x.ColumnId == cell.ColumnId + 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId - 1))
+                        numberOfNeighbooringLiveCells++;
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId))
+                        numberOfNeighbooringLiveCells++;
+
+
+                    if (aliveCells.Any(x => x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId + 1))
+                        numberOfNeighbooringLiveCells++;
+
+
+
+                    var deadOrAlive = StaticFunctions.CellNextGenerationState(numberOfNeighbooringLiveCells, false, board.GameRule);
+
+
+                    if (cell.IsAlive != deadOrAlive)
+                    {
+                        cell.IsAlive = deadOrAlive;
+                        _unitOfWork.Cells.Update(cell);
+                    }
+
                 }
 
+                #endregion
+
+                 return _unitOfWork.Commit() > 0;
             }
 
-            #endregion
-
-            _unitOfWork.Commit();
-            return board;
+            return false;
         }
 
 

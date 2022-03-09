@@ -19,7 +19,7 @@ namespace GameOfLife.Core.IServices
         public bool UpdateBoard(Board board);
         public bool DeleteBoard(Board board, bool commit);
         public bool MakeRandomCellsAlive(Board board);
-        public Board UpdateGeneration(string boardId);
+        public bool UpdateGeneration(string boardId);
         public bool Commit();
     }
 }

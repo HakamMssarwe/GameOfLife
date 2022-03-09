@@ -4,6 +4,7 @@ using GameOfLife.Infrastructure.Entities.DB;
 using GameOfLife.Infrastructure.Entities.DTOs;
 using GameOfLife.Infrastructure.Utils;
 using GameOfLife.Web.API.Hubs;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -82,7 +83,7 @@ namespace GameOfLife.Web.API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("StartGame/{boardId}")]
         public IActionResult StartGame(string boardId)
         {
@@ -95,37 +96,71 @@ namespace GameOfLife.Web.API.Controllers
                     //If the board is still connected, the Id will be stored in this list
                     while (GameHub.ConnectedBoards.Any(x => x == boardId))
                     {
-                        var board = scopedGameService.UpdateGeneration(boardId);
+                        var res = scopedGameService.UpdateGeneration(boardId);
+                        var board = scopedGameService.GetBoardById(boardId);
 
-
-                         var filteredCells = new List<List<object>>();
-
-
-                        for (int i = 1; i <= board.Rows; i++)
+                        if (board != null)
                         {
-                            var cells = scopedGameService.GetAllCellsAsQueryable().Where(x => x.BoardId == board.Id && x.RowId == i).Select(x => new { x.RowId, x.ColumnId, x.IsAlive });
+                            var filteredCells = new List<List<object>>();
 
-                            var rowCells = new List<object>();
 
-                            foreach (var cell in cells)
-                                rowCells.Add(cell);
-                            
+                            for (int i = 1; i <= board.Rows; i++)
+                            {
+                                var cells = scopedGameService.GetAllCellsAsQueryable().Where(x => x.BoardId == boardId && x.RowId == i).Select(x => new { x.RowId, x.ColumnId, x.IsAlive });
 
-                            filteredCells.Add(rowCells);
+                                var rowCells = new List<object>();
+
+                                foreach (var cell in cells)
+                                    rowCells.Add(cell);
+
+
+                                filteredCells.Add(rowCells);
+                            }
+
+                            if (res)
+                                _hubContext.Clients.Client(boardId).SendAsync("UpdateGeneration", filteredCells);
+
+
+                            board.LastTimeUpdated = DateTime.Now;
+                            scopedGameService.UpdateBoard(board);
+                            Task.Delay(StaticFunctions.GetGrowthSpeedInMilliseconds(board.GrowthSpeed)).Wait();
                         }
-
-
-                        _hubContext.Clients.Client(board.Id).SendAsync("UpdateGeneration", filteredCells);
-
-                        board.LastTimeUpdated = DateTime.Now;
-                        scopedGameService.UpdateBoard(board);
-
-                        Task.Delay(StaticFunctions.GetGrowthSpeedInMilliseconds(board.GrowthSpeed));
                     }
                 }
             });
 
             return Ok("The game has started.");
+
+        }
+
+        [HttpPost]
+        [Route("StopGame/{boardId}")]
+        public IActionResult StopGame(string boardId)
+        {
+            try
+            {
+                var board = _gameService.GetBoardById(boardId);
+
+                if (board == null)
+                    return BadRequest("Board does not exist.");
+
+                var res = _gameService.DeleteBoard(board, true);
+
+                if (res)
+                {
+                    _hubContext.Clients.Client(boardId).SendAsync("DisconnectClient");
+                    return Ok("The board has been deleted.");
+                }
+
+
+                return BadRequest("The board has not been deleted.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return BadRequest("Something went wrong.");
+            }
+
         }
     }
 }

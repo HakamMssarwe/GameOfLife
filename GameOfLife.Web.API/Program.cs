@@ -21,8 +21,21 @@ builder.Services.AddDbContext<ApiContext>(options => options.UseInMemoryDatabase
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddTransient<IUnitOfWork,UnitOfWork>();
 builder.Services.AddTransient<IGameService,GameService>();
-builder.Services.AddHostedService<GamesMemoryHandler>();
+//builder.Services.AddHostedService<GamesMemoryHandler>();
 builder.Services.AddSignalR();
+
+
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("CorsPolicy", builder =>
+     {
+         builder
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .SetIsOriginAllowed(origin => true)
+         .AllowCredentials();
+     });
+});
 
 var app = builder.Build();
 
@@ -32,11 +45,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseCors();
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
