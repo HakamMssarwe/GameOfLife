@@ -1,25 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import {useState} from "react";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [cells, setCells] = useState([
+		{isAlive: false, rowId: 1, columnId: 1},
+		{isAlive: false, rowId: 1, columnId: 2},
+		{isAlive: false, rowId: 1, columnId: 3},
+		{isAlive: false, rowId: 1, columnId: 4},
+		{isAlive: false, rowId: 2, columnId: 1},
+		{isAlive: false, rowId: 2, columnId: 2},
+		{isAlive: false, rowId: 2, columnId: 3},
+		{isAlive: false, rowId: 2, columnId: 4},
+		{isAlive: false, rowId: 3, columnId: 1},
+		{isAlive: false, rowId: 3, columnId: 2},
+		{isAlive: false, rowId: 3, columnId: 3},
+		{isAlive: false, rowId: 3, columnId: 4},
+		{isAlive: false, rowId: 4, columnId: 1},
+		{isAlive: false, rowId: 4, columnId: 2},
+		{isAlive: false, rowId: 4, columnId: 3},
+		{isAlive: false, rowId: 4, columnId: 4},
+	]);
+	return (
+		<>
+			<Header />
+			<Hero cells={cells} setCells={setCells} />
+		</>
+	);
 }
 
 export default App;

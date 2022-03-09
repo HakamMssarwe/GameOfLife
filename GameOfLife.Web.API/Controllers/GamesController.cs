@@ -52,14 +52,26 @@ namespace GameOfLife.Web.API.Controllers
                     throw new Exception("Failed to randomize alive cells.");
                 }
 
+                var filteredCells = new List<List<object>>();
 
-                var cells = _gameService.GetAllCellsAsQueryable().Where(x => x.BoardId == board.Id).Select(x => new { x.RowId, x.ColumnId, x.IsAlive });
+                for (int i = 1; i <= board.Rows; i++)
+                {
+                    var cells = _gameService.GetAllCellsAsQueryable().Where(x => x.BoardId == board.Id && x.RowId == i).Select(x => new {x.RowId, x.ColumnId, x.IsAlive});
+
+                    var rowCells = new List<object>();
+
+                    foreach(var cell in cells)
+                        rowCells.Add(cell);
+                    
+
+                    filteredCells.Add(rowCells);
+                }
 
 
                 return Ok(new
                 {
                     boardId = board.Id,
-                    cells = cells
+                    cells = filteredCells
                 });
 
             }
@@ -85,9 +97,25 @@ namespace GameOfLife.Web.API.Controllers
                     {
                         var board = scopedGameService.UpdateGeneration(boardId);
 
-                        var cells = scopedGameService.GetAllCellsAsQueryable().Where(x => x.BoardId == boardId).Select(x => new { x.RowId, x.ColumnId, x.IsAlive });
 
-                        _hubContext.Clients.Client(board.Id).SendAsync("UpdateGeneration", cells);
+                         var filteredCells = new List<List<object>>();
+
+
+                        for (int i = 1; i <= board.Rows; i++)
+                        {
+                            var cells = scopedGameService.GetAllCellsAsQueryable().Where(x => x.BoardId == board.Id && x.RowId == i).Select(x => new { x.RowId, x.ColumnId, x.IsAlive });
+
+                            var rowCells = new List<object>();
+
+                            foreach (var cell in cells)
+                                rowCells.Add(cell);
+                            
+
+                            filteredCells.Add(rowCells);
+                        }
+
+
+                        _hubContext.Clients.Client(board.Id).SendAsync("UpdateGeneration", filteredCells);
 
                         board.LastTimeUpdated = DateTime.Now;
                         scopedGameService.UpdateBoard(board);
