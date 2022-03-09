@@ -25,7 +25,6 @@ namespace GameOfLife.Infrastructure.Utils
 
         public enum GrowthSpeed
         {
-            Stop,
             VerySlow,
             Slow,
             Normal,

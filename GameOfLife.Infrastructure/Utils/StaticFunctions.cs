@@ -29,8 +29,6 @@ namespace GameOfLife.Infrastructure.Utils
                 case GrowthSpeed.VeryFast:
                     return 100;
 
-                case GrowthSpeed.Stop:
-                    return 0;
 
                 default:
                     return 500;

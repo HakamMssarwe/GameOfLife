@@ -1,4 +1,5 @@
 ﻿using GameOfLife.Core.IServices;
+using GameOfLife.Infrastructure.Utils;
 using static GameOfLife.Infrastructure.Utils.Enums;
 
 namespace GameOfLife.Web.API.BackgroundServices
@@ -30,11 +31,9 @@ namespace GameOfLife.Web.API.BackgroundServices
                         {
                             var timePassed = board.LastTimeUpdated - DateTime.Now;
 
-                            if (timePassed.TotalMinutes > 5 && board.GrowthSpeed != GrowthSpeed.Stop)
+                            if (timePassed.TotalMinutes > 5)
                                 _gameService.DeleteBoard(board, false);
 
-                            else if (timePassed.TotalMinutes > 60)
-                                _gameService.DeleteBoard(board, false);
 
                         }
 
@@ -46,7 +45,7 @@ namespace GameOfLife.Web.API.BackgroundServices
                     _logger.LogError(ex.ToString());
                 }
 
-                await Task.Delay((1000 * 60) * 5 , stoppingToken);
+                await Task.Delay((1000 * 60) * Constants.MEMORY_HANDLER_WAIT_TIME, stoppingToken);
             }
         }
     }

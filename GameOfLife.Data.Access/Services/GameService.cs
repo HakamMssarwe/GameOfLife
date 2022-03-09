@@ -214,7 +214,6 @@ namespace GameOfLife.Data.Access.Services
 
             #endregion
 
-
             _unitOfWork.Commit();
             return board;
         }

@@ -89,6 +89,9 @@ namespace GameOfLife.Web.API.Controllers
 
                         _hubContext.Clients.Client(board.Id).SendAsync("UpdateGeneration", cells);
 
+                        board.LastTimeUpdated = DateTime.Now;
+                        scopedGameService.UpdateBoard(board);
+
                         Task.Delay(StaticFunctions.GetGrowthSpeedInMilliseconds(board.GrowthSpeed));
                     }
                 }
