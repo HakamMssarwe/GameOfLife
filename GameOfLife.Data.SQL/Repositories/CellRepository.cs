@@ -17,7 +17,7 @@ namespace GameOfLife.Data.SQL.Repositories
 
         }
 
-        public Cell GetByIdIncluded(int rowId, int columnId)
+        public Cell GetById(int rowId, int columnId)
         {
             return _context.Cells.AsQueryable().Where(x => x.RowId == rowId && x.ColumnId == columnId).FirstOrDefault();
         }

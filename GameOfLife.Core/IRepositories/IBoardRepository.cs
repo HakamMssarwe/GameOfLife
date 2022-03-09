@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace GameOfLife.Core.IRepositories
 {
-    public interface ICellRepository : IRepository<Cell>
+    public interface IBoardRepository : IRepository<Board>
     {
-        Cell GetById(int rowId, int colId);
-        IEnumerable<Cell> GetAllAsQueryable();
+        Board GetById(string id);
+        IEnumerable<Board> GetAllAsQueryable();
     }
 }

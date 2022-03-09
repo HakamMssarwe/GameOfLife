@@ -17,8 +17,10 @@ namespace GameOfLife.Data.SQL
             this._context = context;
         }
 
+        private IBoardRepository _boardRepository;
         private ICellRepository _cellRepository;
 
+        public IBoardRepository Boards => _boardRepository ??= new BoardRepository(_context);
         public ICellRepository Cells => _cellRepository ??= new CellRepository(_context);
 
 

@@ -18,9 +18,10 @@ namespace GameOfLife.Data.SQL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cell>()
-                .HasKey(x => new { x.RowId, x.ColumnId });
+                .HasKey(x => new { x.BoardId ,x.RowId, x.ColumnId });
         }
 
+        public DbSet<Board> Boards { get; set; }
         public DbSet<Cell> Cells { get; set; }
 
     }

@@ -9,6 +9,7 @@ namespace GameOfLife.Core
 {
     public interface IUnitOfWork
     {
+        public IBoardRepository Boards { get; }
         public ICellRepository Cells { get; }
 
         int Commit();
