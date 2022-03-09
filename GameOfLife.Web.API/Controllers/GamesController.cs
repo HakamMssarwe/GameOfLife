@@ -32,7 +32,7 @@ namespace GameOfLife.Web.API.Controllers
 
         [HttpPost]
         [Route("InitateGame")]
-        public IActionResult Start([FromBody] BoardDTO dto)
+        public IActionResult InitateGame([FromBody] BoardDTO dto)
         {
             try
             {

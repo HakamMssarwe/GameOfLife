@@ -45,7 +45,7 @@ namespace GameOfLife.Web.API.BackgroundServices
                     _logger.LogError(ex.ToString());
                 }
 
-                await Task.Delay((1000 * 60) * Constants.MEMORY_HANDLER_WAIT_TIME, stoppingToken);
+                await Task.Delay((1000 * 60) * Constants.MEMORY_HANDLER_WAIT_TIME_BETWEEN_CHECKS, stoppingToken);
             }
         }
     }

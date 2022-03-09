@@ -8,6 +8,6 @@ namespace GameOfLife.Infrastructure.Utils
 {
     public class Constants
     {
-        public static int MEMORY_HANDLER_WAIT_TIME = 5;
+        public static int MEMORY_HANDLER_WAIT_TIME_BETWEEN_CHECKS = 5;
     }
 }
