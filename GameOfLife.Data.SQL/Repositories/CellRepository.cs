@@ -22,9 +22,22 @@ namespace GameOfLife.Data.SQL.Repositories
             return _context.Cells.AsQueryable().Where(x => x.RowId == rowId && x.ColumnId == columnId).FirstOrDefault();
         }
 
-        public IEnumerable<Cell> GetAllAsQueryable()
+        public IQueryable<Cell> GetAllAsQueryable()
         {
             return _context.Cells.AsQueryable();
+        }
+
+        public IEnumerable<Cell> GetNeighbooringCells(Cell cell)
+        {
+            return _context.Cells.AsQueryable().AsNoTracking().
+                Where(x => x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId - 1||
+                x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId ||
+                x.RowId == cell.RowId - 1 && x.ColumnId == cell.ColumnId + 1||
+                x.RowId == cell.RowId && x.ColumnId == cell.ColumnId - 1 ||
+                x.RowId == cell.RowId && x.ColumnId == cell.ColumnId + 1 ||
+                x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId - 1||
+                x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId ||
+                x.RowId == cell.RowId + 1 && x.ColumnId == cell.ColumnId + 1);
         }
     }
 }

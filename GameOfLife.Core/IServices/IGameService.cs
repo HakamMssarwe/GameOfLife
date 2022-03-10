@@ -13,7 +13,7 @@ namespace GameOfLife.Core.IServices
         public Board GetBoardById(string boardId);
         public IEnumerable<Board> GetAllBoardsAsQueryable();
         public Cell GetCell(int rowId, int columnId);
-        public IEnumerable<Cell> GetAllCellsAsQueryable();
+        public IQueryable<Cell> GetAllCellsAsQueryable();
 
         public bool CreateBoard(Board board);
         public bool UpdateBoard(Board board);

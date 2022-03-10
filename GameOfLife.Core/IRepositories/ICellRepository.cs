@@ -10,6 +10,7 @@ namespace GameOfLife.Core.IRepositories
     public interface ICellRepository : IRepository<Cell>
     {
         Cell GetById(int rowId, int colId);
-        IEnumerable<Cell> GetAllAsQueryable();
+        IQueryable<Cell> GetAllAsQueryable();
+        public IEnumerable<Cell> GetNeighbooringCells(Cell cell);
     }
 }

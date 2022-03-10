@@ -20,16 +20,17 @@ namespace GameOfLife.Web.API.Controllers
         readonly IGameService _gameService;
         readonly ILogger<GamesController> _logger;
         readonly IHubContext<GameHub> _hubContext;
-        private readonly IServiceProvider _serviceProvider;
+        readonly IServiceScopeFactory _scopeFactory;
 
-        public GamesController(IMapper mapper, IGameService gameService, ILogger<GamesController> logger, IHubContext<GameHub> hubContext, IServiceProvider serviceProvider)
+        public GamesController(IMapper mapper, IGameService gameService, ILogger<GamesController> logger, IHubContext<GameHub> hubContext, IServiceScopeFactory scopeFactory)
         {
             _mapper = mapper;
             _gameService = gameService;
             _logger = logger;
             _hubContext = hubContext;
-            _serviceProvider = serviceProvider;
+            _scopeFactory = scopeFactory;
         }
+
 
         [HttpPost]
         [Route("InitateGame")]
@@ -89,9 +90,9 @@ namespace GameOfLife.Web.API.Controllers
         {
             Task.Run(() =>
             {
-                using (IServiceScope scope = _serviceProvider.CreateScope())
+                using (var scope = _scopeFactory.CreateScope())
                 {
-                    IGameService scopedGameService = scope.ServiceProvider.GetRequiredService<IGameService>();
+                    var scopedGameService = scope.ServiceProvider.GetRequiredService<IGameService>();
 
                     //If the board is still connected, the Id will be stored in this list
                     while (GameHub.ConnectedBoards.Any(x => x == boardId))
@@ -106,7 +107,7 @@ namespace GameOfLife.Web.API.Controllers
 
                             for (int i = 1; i <= board.Rows; i++)
                             {
-                                var cells = scopedGameService.GetAllCellsAsQueryable().Where(x => x.BoardId == boardId && x.RowId == i).Select(x => new { x.RowId, x.ColumnId, x.IsAlive });
+                                var cells = scopedGameService.GetAllCellsAsQueryable().Where(x => x.BoardId == board.Id && x.RowId == i).Select(x => new { x.RowId, x.ColumnId, x.IsAlive });
 
                                 var rowCells = new List<object>();
 
@@ -127,6 +128,7 @@ namespace GameOfLife.Web.API.Controllers
                         }
                     }
                 }
+                
             });
 
             return Ok("The game has started.");
